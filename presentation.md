@@ -103,6 +103,12 @@ AI makes priority decisions in **under 30 seconds**
 
 ---
 
+## Dashboard Preview
+
+![Dashboard](./references/screen.png)
+
+---
+
 ## System Architecture
 
 ![Architecture](./RescueLine%20AI%20Architecture.png)
