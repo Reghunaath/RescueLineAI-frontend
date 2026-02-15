@@ -1,5 +1,27 @@
 import { useCallData } from "./useCallData";
 
+function formatTimestamp(timestamp) {
+  if (!timestamp) return "";
+
+  // If already formatted as HH:MM:SS, return as-is
+  if (typeof timestamp === "string" && /^\d{2}:\d{2}:\d{2}$/.test(timestamp)) {
+    return timestamp;
+  }
+
+  // Otherwise parse as ISO string and format
+  try {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString("en-US", {
+      hour12: false,
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  } catch {
+    return String(timestamp);
+  }
+}
+
 const PRIORITY_COLORS = {
   P0: { bg: "bg-priority-p0/20", text: "text-priority-p0", border: "border-priority-p0", solid: "bg-priority-p0" },
   P1: { bg: "bg-priority-p1/20", text: "text-priority-p1", border: "border-priority-p1", solid: "bg-priority-p1" },
@@ -40,7 +62,7 @@ function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
           </span>
           <div className="flex items-center space-x-1">
             <span className="material-icons text-green-500 text-xs">check_circle</span>
-            <span className="text-xs text-gray-500 font-mono">{call.timestamp}</span>
+            <span className="text-xs text-gray-500 font-mono">{formatTimestamp(call.timestamp)}</span>
           </div>
         </div>
         <h3 className="text-gray-300 font-medium text-lg leading-tight mb-2 line-through decoration-gray-500">
@@ -74,7 +96,7 @@ function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
         >
           {call.priority}
         </span>
-        <span className="text-xs text-gray-500 font-mono">{call.timestamp}</span>
+        <span className="text-xs text-gray-500 font-mono">{formatTimestamp(call.timestamp)}</span>
       </div>
       <h3 className="text-white font-semibold text-lg leading-tight mb-2">
         {call.emergency_type}

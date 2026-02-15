@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { USE_MOCK_DATA, WS_URL } from "./config";
+import { USE_MOCK_DATA, WS_URL, API_BASE_URL } from "./config";
 import { MOCK_CALLS } from "./mockData";
 
 export function useCallData() {
@@ -30,7 +30,7 @@ export function useCallData() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log("[WS] Connected");
+      console.log("[WS] ✅ Connected successfully");
       setConnected(true);
       reconnectDelayRef.current = 1000;
     };
@@ -59,20 +59,22 @@ export function useCallData() {
     };
 
     ws.onclose = () => {
-      console.log("[WS] Disconnected");
-      setConnected(false);
+      console.log("[WS] Disconnected - WebSocket not available with ngrok");
       wsRef.current = null;
+      // Don't show disconnected banner if we have data from REST API
+      // setConnected(false);
 
-      const delay = Math.min(reconnectDelayRef.current, 30000);
-      console.log(`[WS] Reconnecting in ${delay}ms...`);
-      reconnectTimeoutRef.current = setTimeout(() => {
-        reconnectDelayRef.current = delay * 2;
-        connectWebSocket();
-      }, delay);
+      // Don't auto-reconnect - ngrok blocks WebSocket
+      // const delay = Math.min(reconnectDelayRef.current, 30000);
+      // reconnectTimeoutRef.current = setTimeout(() => {
+      //   reconnectDelayRef.current = delay * 2;
+      //   connectWebSocket();
+      // }, delay);
     };
 
     ws.onerror = (err) => {
-      console.error("[WS] Error:", err);
+      console.warn("[WS] WebSocket not available (ngrok limitation)");
+      console.log("[WS] Falling back to REST API polling");
       ws.close();
     };
   }, [addCall, updateCallStatus]);
@@ -80,14 +82,39 @@ export function useCallData() {
   useEffect(() => {
     if (USE_MOCK_DATA) {
       setCalls(MOCK_CALLS);
-      // const response = await fetch(`${API_BASE_URL}/api/calls`);
-      // const calls = await response.json();
       return;
     }
 
+    let pollInterval;
+
+    // Load data from REST API
+    const loadData = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/calls`);
+        const data = await response.json();
+        console.log("[API] ✅ Loaded", data.total, "calls");
+        setCalls(data.calls || []);
+        setConnected(true);
+      } catch (err) {
+        console.error("[API] ❌ Failed to load data:", err);
+        setConnected(false);
+      }
+    };
+
+    // Initial load
+    console.log("[API] Loading initial data...");
+    loadData();
+
+    // Poll every 3 seconds for updates (since WebSocket doesn't work with ngrok)
+    pollInterval = setInterval(() => {
+      loadData();
+    }, 3000);
+
+    // Try WebSocket (will fail silently with ngrok)
     connectWebSocket();
 
     return () => {
+      clearInterval(pollInterval);
       if (wsRef.current) wsRef.current.close();
       if (reconnectTimeoutRef.current)
         clearTimeout(reconnectTimeoutRef.current);
