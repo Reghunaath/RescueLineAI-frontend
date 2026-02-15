@@ -137,5 +137,21 @@ export function useCallData() {
     waitlist: callsByStatus.waitlist.length,
   };
 
-  return { calls, callsByStatus, stats, connected };
+  const assignToAgent = async (callId) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/calls/${callId}/assign`, {
+        method: 'PATCH',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to assign call');
+      }
+
+      console.log('[API] ✅ Call assigned to agent:', callId);
+    } catch (err) {
+      console.error('[API] ❌ Failed to assign call:', err);
+    }
+  };
+
+  return { calls, callsByStatus, stats, connected, assignToAgent };
 }

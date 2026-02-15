@@ -104,7 +104,13 @@ function broadcastToClients(message) {
 }
 
 // ========== Helpers ==========
-function deriveStatus(priority) {
+function deriveStatus(priority, manuallyAssigned) {
+  // If manually assigned, always show in human_agent
+  if (manuallyAssigned) {
+    return 'human_agent';
+  }
+
+  // Otherwise use priority-based logic
   if (priority === 'P0' || priority === 'P1') {
     return 'human_agent';
   }
@@ -112,8 +118,8 @@ function deriveStatus(priority) {
 }
 
 function serializeCall(call) {
-  // Use stored status, or derive from priority if missing
-  const status = call.status || deriveStatus(call.priority);
+  // Use stored status, or derive from priority and manually_assigned flag
+  const status = call.status || deriveStatus(call.priority, call.manually_assigned);
 
   return {
     id: call._id.toString(),
@@ -165,6 +171,40 @@ app.patch('/api/calls/:id/status', async (req, res) => {
   } catch (err) {
     console.error('Error updating status:', err);
     res.status(500).json({ error: 'Failed to update status' });
+  }
+});
+
+// Assign call to human agent
+app.patch('/api/calls/:id/assign', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Update the call with manually_assigned flag and change status
+    const updatedCall = await Call.findByIdAndUpdate(
+      id,
+      {
+        manually_assigned: true,
+        status: 'human_agent'
+      },
+      { new: true }
+    );
+
+    if (!updatedCall) {
+      return res.status(404).json({ error: 'Call not found' });
+    }
+
+    console.log('✅ Call manually assigned to agent:', id);
+
+    // Broadcast to connected dashboards
+    broadcastToClients({
+      type: 'status_update',
+      data: { id, status: 'human_agent' },
+    });
+
+    res.json({ status: 'assigned', call: serializeCall(updatedCall) });
+  } catch (err) {
+    console.error('Error assigning call:', err);
+    res.status(500).json({ error: 'Failed to assign call' });
   }
 });
 

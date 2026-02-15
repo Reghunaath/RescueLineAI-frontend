@@ -7,6 +7,7 @@ Real-time emergency call triage dashboard for disaster response coordination.
 - **Problem:** Emergency helplines get overwhelmed during disasters. RescueLine AI uses an AI voice agent to instantly triage incoming calls, prioritize life-threatening emergencies, and route them to human responders while managing non-critical cases on a waitlist.
 
 - **Tech Stack:**
+
   - Frontend: React + Tailwind CSS with WebSocket for real-time updates
   - Backend: Node.js/Express with MongoDB Atlas
   - AI Integration: ElevenLabs conversational AI agent for call triage
@@ -23,6 +24,7 @@ Real-time emergency call triage dashboard for disaster response coordination.
 ## Set Up Instructions
 
 ### Prerequisites
+
 - Node.js 18+
 - MongoDB Atlas account
 - ElevenLabs account (for AI agent)
@@ -31,27 +33,32 @@ Real-time emergency call triage dashboard for disaster response coordination.
 ### Installation
 
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/Reghunaath/RescueLineAI-frontend.git
 cd RescueLineAI-frontend
 ```
 
 2. Install dependencies:
+
 ```bash
 npm install
 ```
 
 3. Update MongoDB connection string in `server/index.js`:
+
 ```javascript
-const MONGO_URI = 'your-mongodb-atlas-connection-string';
+const MONGO_URI = "your-mongodb-atlas-connection-string";
 ```
 
 4. Start the backend server:
+
 ```bash
 npm run server
 ```
 
 5. In a new terminal, start the frontend:
+
 ```bash
 npm run dev
 ```
@@ -61,6 +68,7 @@ npm run dev
 ### Configuration
 
 Toggle between mock data and live backend in `src/config.js`:
+
 ```javascript
 export const USE_MOCK_DATA = false; // false = live data, true = mock data
 ```
@@ -86,3 +94,4 @@ ElevenLabs AI Agent → Twilio → ngrok Backend → MongoDB Atlas
 ## Collaborators
 
 - Reghunaath
+- Naga Pavithra Lagisetty

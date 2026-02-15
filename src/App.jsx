@@ -50,8 +50,9 @@ const COLUMNS = [
   },
 ];
 
-function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
+function CallCard({ call, isAiAgent, isCompleted, isHumanAgent, onAssignToAgent }) {
   const colors = PRIORITY_COLORS[call.priority] || PRIORITY_COLORS.P3;
+  const isWaitlist = !isAiAgent && !isCompleted && !isHumanAgent;
 
   if (isCompleted) {
     return (
@@ -113,11 +114,19 @@ function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
           "{call.summary}"
         </div>
       </div>
+      {isWaitlist && (
+        <button
+          onClick={() => onAssignToAgent(call.id)}
+          className="mt-3 w-full bg-primary hover:bg-blue-600 text-white text-xs font-semibold py-2 px-3 rounded transition-colors"
+        >
+          Assign to Agent
+        </button>
+      )}
     </div>
   );
 }
 
-function KanbanColumn({ column, cards }) {
+function KanbanColumn({ column, cards, onAssignToAgent }) {
   const isAiAgent = column.key === "ai_agent";
   const isCompleted = column.key === "completed";
   const isHumanAgent = column.key === "human_agent";
@@ -147,6 +156,7 @@ function KanbanColumn({ column, cards }) {
             isAiAgent={isAiAgent}
             isCompleted={isCompleted}
             isHumanAgent={isHumanAgent}
+            onAssignToAgent={onAssignToAgent}
           />
         ))}
       </div>
@@ -199,7 +209,7 @@ function DisconnectedBanner() {
 }
 
 export default function App() {
-  const { callsByStatus, stats, connected } = useCallData();
+  const { callsByStatus, stats, connected, assignToAgent } = useCallData();
 
   return (
     <div className="bg-background-dark text-gray-100 min-h-screen flex flex-col">
@@ -208,7 +218,12 @@ export default function App() {
       <main className="flex-1 overflow-x-auto bg-surface-dark p-6">
         <div className="min-w-[1200px] grid grid-cols-2 gap-6">
           {COLUMNS.map((col) => (
-            <KanbanColumn key={col.key} column={col} cards={callsByStatus[col.key]} />
+            <KanbanColumn
+              key={col.key}
+              column={col}
+              cards={callsByStatus[col.key]}
+              onAssignToAgent={assignToAgent}
+            />
           ))}
         </div>
       </main>
