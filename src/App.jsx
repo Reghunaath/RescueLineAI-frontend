@@ -116,8 +116,12 @@ function CallCard({ call, isAiAgent, isCompleted, isHumanAgent, onAssignToAgent 
       </div>
       {isWaitlist && (
         <button
-          onClick={() => onAssignToAgent(call.id)}
-          className="mt-3 w-full bg-primary hover:bg-blue-600 text-white text-xs font-semibold py-2 px-3 rounded transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            console.log('Assign button clicked for call:', call.id);
+            onAssignToAgent(call.id);
+          }}
+          className="mt-3 w-full bg-primary hover:bg-blue-600 text-white text-xs font-semibold py-2 px-3 rounded transition-colors cursor-pointer relative z-10"
         >
           Assign to Agent
         </button>

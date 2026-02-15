@@ -138,7 +138,14 @@ export function useCallData() {
   };
 
   const assignToAgent = async (callId) => {
+    if (USE_MOCK_DATA) {
+      console.warn('[API] Cannot assign - using mock data mode');
+      alert('Please enable live backend (USE_MOCK_DATA = false) to assign calls');
+      return;
+    }
+
     try {
+      console.log('[API] Assigning call to agent:', callId);
       const response = await fetch(`${API_BASE_URL}/api/calls/${callId}/assign`, {
         method: 'PATCH',
       });
@@ -150,6 +157,7 @@ export function useCallData() {
       console.log('[API] ✅ Call assigned to agent:', callId);
     } catch (err) {
       console.error('[API] ❌ Failed to assign call:', err);
+      alert('Failed to assign call. Check console for details.');
     }
   };
 
