@@ -105,7 +105,7 @@ AI makes priority decisions in **under 30 seconds**
 
 ## Dashboard Preview
 
-![Dashboard](./references/screen.png)
+![Dashboard](./dashboard.jpeg)
 
 ---
 
