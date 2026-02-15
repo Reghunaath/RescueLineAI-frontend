@@ -1,16 +1,88 @@
-# React + Vite
+# RescueLine AI Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Real-time emergency call triage dashboard for disaster response coordination.
 
-Currently, two official plugins are available:
+## Details
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Problem:** Emergency helplines get overwhelmed during disasters. RescueLine AI uses an AI voice agent to instantly triage incoming calls, prioritize life-threatening emergencies, and route them to human responders while managing non-critical cases on a waitlist.
 
-## React Compiler
+- **Tech Stack:**
+  - Frontend: React + Tailwind CSS with WebSocket for real-time updates
+  - Backend: Node.js/Express with MongoDB Atlas
+  - AI Integration: ElevenLabs conversational AI agent for call triage
+  - Infrastructure: Twilio for telephony, ngrok for webhook handling
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- **Extension Type:** Full-stack dashboard with real-time data synchronization using MongoDB change streams
 
-## Expanding the ESLint configuration
+- **Future Improvements:**
+  - Add call recording playback
+  - Implement dispatcher assignment workflow
+  - Build analytics dashboard for call volume trends
+  - Add manual status override with drag-and-drop
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Set Up Instructions
+
+### Prerequisites
+- Node.js 18+
+- MongoDB Atlas account
+- ElevenLabs account (for AI agent)
+- Twilio account (for phone number)
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/Reghunaath/RescueLineAI-frontend.git
+cd RescueLineAI-frontend
+```
+
+2. Install dependencies:
+```bash
+npm install
+```
+
+3. Update MongoDB connection string in `server/index.js`:
+```javascript
+const MONGO_URI = 'your-mongodb-atlas-connection-string';
+```
+
+4. Start the backend server:
+```bash
+npm run server
+```
+
+5. In a new terminal, start the frontend:
+```bash
+npm run dev
+```
+
+6. Open `http://localhost:5173` in your browser
+
+### Configuration
+
+Toggle between mock data and live backend in `src/config.js`:
+```javascript
+export const USE_MOCK_DATA = false; // false = live data, true = mock data
+```
+
+## Architecture
+
+```
+ElevenLabs AI Agent → Twilio → ngrok Backend → MongoDB Atlas
+                                                     ↓
+                                          MongoDB Change Stream
+                                                     ↓
+                                            Local Express Server
+                                                     ↓
+                                              WebSocket
+                                                     ↓
+                                            React Dashboard
+```
+
+- **Call Flow:** Caller → Twilio number → ElevenLabs AI → Priority assignment (P0-P3)
+- **Data Flow:** AI agent → webhook → MongoDB → change stream → dashboard (real-time)
+- **Priority Logic:** P0/P1 calls route to human agents, P2/P3 go to waitlist
+
+## Collaborators
+
+- Reghunaath
