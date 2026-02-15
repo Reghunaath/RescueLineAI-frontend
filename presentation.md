@@ -79,12 +79,6 @@ During natural disasters, emergency helplines become **overwhelmed**
 
 ---
 
-## System Architecture
-
-![Architecture](./RescueLine%20AI%20Architecture.png)
-
----
-
 ## Priority System
 
 | Priority  | Type             | Response       |
@@ -106,6 +100,12 @@ AI makes priority decisions in **under 30 seconds**
 - **WebSocket updates**: New calls appear instantly
 - **Manual override**: "Assign to Agent" button for waitlist escalation
 - **MongoDB change streams**: Zero-latency data synchronization
+
+---
+
+## System Architecture
+
+![Architecture](./RescueLine%20AI%20Architecture.png)
 
 ---
 
