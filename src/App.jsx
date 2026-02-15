@@ -12,13 +12,16 @@ const COLUMNS = [
     key: "ai_agent",
     label: "AI Agent Analysis",
     dotColor: "bg-primary",
+    dotPulse: true,
     headerTextColor: "text-gray-400",
     badgeStyle: "bg-gray-800 text-gray-400",
+    wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
   },
   {
     key: "waitlist",
     label: "Waitlist",
     dotColor: "bg-priority-p2",
+    dotPulse: true,
     headerTextColor: "text-gray-400",
     badgeStyle: "bg-gray-800 text-gray-400",
     wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
@@ -29,7 +32,8 @@ const COLUMNS = [
     dotColor: "bg-priority-p0",
     dotPulse: true,
     headerTextColor: "text-white",
-    badgeStyle: "bg-primary text-white",
+    badgeStyle: "bg-gray-800 text-gray-400",
+    wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
   },
   {
     key: "completed",
@@ -37,6 +41,7 @@ const COLUMNS = [
     icon: "history",
     headerTextColor: "text-gray-500",
     dimmed: true,
+    wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
   },
 ];
 
@@ -66,7 +71,7 @@ function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
           </div>
         </div>
         <div className="bg-black/40 rounded-lg p-3 mt-3">
-          <div className="text-xs text-gray-600 font-mono leading-relaxed truncate">
+          <div className="text-xs text-gray-600 font-mono leading-relaxed line-clamp-2">
             "{call.summary}"
           </div>
         </div>
@@ -74,27 +79,15 @@ function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
     );
   }
 
-  const isP0Human = isHumanAgent && call.priority === "P0";
-
   return (
     <div
       className={`card-enter bg-card-dark rounded-lg p-4 border-l-4 ${colors.border} ${
         isAiAgent ? "ai-pulse" : ""
-      } ${
-        isHumanAgent
-          ? `ring-1 ${
-              isP0Human
-                ? "ring-priority-p0/30 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
-                : "ring-priority-p1/20 shadow-lg"
-            }`
-          : ""
       } relative overflow-hidden group hover:bg-[#32324a] transition-colors`}
     >
       <div className="flex justify-between items-center mb-2">
         <span
-          className={`${
-            isP0Human ? `${colors.solid} text-white shadow-sm` : `${colors.bg} ${colors.text}`
-          } text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wide`}
+          className={`${colors.bg} ${colors.text} text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wide`}
         >
           {call.priority}
         </span>
@@ -111,7 +104,7 @@ function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
         </div>
       </div>
       <div className="bg-black/40 rounded-lg p-3 mt-3">
-        <div className="text-xs text-gray-400 font-mono leading-relaxed truncate">
+        <div className="text-xs text-gray-400 font-mono leading-relaxed line-clamp-2">
           "{call.summary}"
         </div>
       </div>
@@ -206,11 +199,11 @@ export default function App() {
   const { callsByStatus, stats, connected } = useCallData();
 
   return (
-    <div className="bg-background-dark text-gray-100 h-screen overflow-hidden flex flex-col">
+    <div className="bg-background-dark text-gray-100 min-h-screen flex flex-col">
       {!connected && <DisconnectedBanner />}
       <Header stats={stats} />
-      <main className="flex-1 overflow-x-auto overflow-y-hidden bg-surface-dark p-6">
-        <div className="h-full min-w-[1200px] grid grid-cols-4 gap-6">
+      <main className="flex-1 overflow-x-auto bg-surface-dark p-6">
+        <div className="min-w-[1200px] grid grid-cols-4 gap-6">
           {COLUMNS.map((col) => (
             <KanbanColumn key={col.key} column={col} cards={callsByStatus[col.key]} />
           ))}
