@@ -9,15 +9,6 @@ const PRIORITY_COLORS = {
 
 const COLUMNS = [
   {
-    key: "ai_agent",
-    label: "AI Agent Analysis",
-    dotColor: "bg-primary",
-    dotPulse: true,
-    headerTextColor: "text-gray-400",
-    badgeStyle: "bg-gray-800 text-gray-400",
-    wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
-  },
-  {
     key: "waitlist",
     label: "Waitlist",
     dotColor: "bg-priority-p2",
@@ -33,14 +24,6 @@ const COLUMNS = [
     dotPulse: true,
     headerTextColor: "text-white",
     badgeStyle: "bg-gray-800 text-gray-400",
-    wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
-  },
-  {
-    key: "completed",
-    label: "Completed",
-    icon: "history",
-    headerTextColor: "text-gray-500",
-    dimmed: true,
     wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
   },
 ];
@@ -130,13 +113,11 @@ function KanbanColumn({ column, cards }) {
             {column.label}
           </h2>
         </div>
-        {!isCompleted && (
-          <span className={`${column.badgeStyle} text-xs px-2 py-0.5 rounded-full font-mono`}>
-            {cards.length}
-          </span>
-        )}
+        <span className={`${column.badgeStyle} text-xs px-2 py-0.5 rounded-full font-mono`}>
+          {cards.length}
+        </span>
       </div>
-      <div className={`kanban-col flex-1 overflow-y-auto space-y-3 ${column.wrapperClass ? "px-1" : "pr-2"}`}>
+      <div className={`kanban-col flex-1 overflow-y-auto grid grid-cols-2 gap-3 auto-rows-max ${column.wrapperClass ? "px-1" : "pr-2"}`}>
         {cards.map((call) => (
           <CallCard
             key={call.id}
@@ -203,7 +184,7 @@ export default function App() {
       {!connected && <DisconnectedBanner />}
       <Header stats={stats} />
       <main className="flex-1 overflow-x-auto bg-surface-dark p-6">
-        <div className="min-w-[1200px] grid grid-cols-4 gap-6">
+        <div className="min-w-[1200px] grid grid-cols-2 gap-6">
           {COLUMNS.map((col) => (
             <KanbanColumn key={col.key} column={col} cards={callsByStatus[col.key]} />
           ))}
