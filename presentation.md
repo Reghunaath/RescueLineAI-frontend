@@ -81,19 +81,7 @@ During natural disasters, emergency helplines become **overwhelmed**
 
 ## System Architecture
 
-```
-📞 Caller → Twilio → ElevenLabs AI Agent
-                          ↓
-                    Priority Assignment
-                    (P0, P1, P2, P3)
-                          ↓
-        ┌─────────────────┴─────────────────┐
-        ↓                                   ↓
-  Human Agent                          Waitlist
-  (P0/P1)                              (P2/P3)
-        ↓                                   ↓
-    MongoDB ← WebSocket → Real-time Dashboard
-```
+![Architecture](./RescueLine%20AI%20Architecture.png)
 
 ---
 
