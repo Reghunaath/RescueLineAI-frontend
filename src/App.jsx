@@ -1,0 +1,221 @@
+import { useCallData } from "./useCallData";
+
+const PRIORITY_COLORS = {
+  P0: { bg: "bg-priority-p0/20", text: "text-priority-p0", border: "border-priority-p0", solid: "bg-priority-p0" },
+  P1: { bg: "bg-priority-p1/20", text: "text-priority-p1", border: "border-priority-p1", solid: "bg-priority-p1" },
+  P2: { bg: "bg-priority-p2/20", text: "text-priority-p2", border: "border-priority-p2", solid: "bg-priority-p2" },
+  P3: { bg: "bg-priority-p3/20", text: "text-priority-p3", border: "border-priority-p3", solid: "bg-priority-p3" },
+};
+
+const COLUMNS = [
+  {
+    key: "ai_agent",
+    label: "AI Agent Analysis",
+    dotColor: "bg-primary",
+    headerTextColor: "text-gray-400",
+    badgeStyle: "bg-gray-800 text-gray-400",
+  },
+  {
+    key: "waitlist",
+    label: "Waitlist",
+    dotColor: "bg-priority-p2",
+    headerTextColor: "text-gray-400",
+    badgeStyle: "bg-gray-800 text-gray-400",
+    wrapperClass: "bg-gray-900/30 rounded-xl p-2 border border-dashed border-gray-800",
+  },
+  {
+    key: "human_agent",
+    label: "Human Agent",
+    dotColor: "bg-priority-p0",
+    dotPulse: true,
+    headerTextColor: "text-white",
+    badgeStyle: "bg-primary text-white",
+  },
+  {
+    key: "completed",
+    label: "Completed",
+    icon: "history",
+    headerTextColor: "text-gray-500",
+    dimmed: true,
+  },
+];
+
+function CallCard({ call, isAiAgent, isCompleted, isHumanAgent }) {
+  const colors = PRIORITY_COLORS[call.priority] || PRIORITY_COLORS.P3;
+
+  if (isCompleted) {
+    return (
+      <div className="card-enter bg-card-dark rounded-lg p-4 border-l-4 border-gray-600 grayscale opacity-80">
+        <div className="flex justify-between items-center mb-2">
+          <span className="bg-gray-700 text-gray-400 text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+            {call.priority}
+          </span>
+          <div className="flex items-center space-x-1">
+            <span className="material-icons text-green-500 text-xs">check_circle</span>
+            <span className="text-xs text-gray-500 font-mono">{call.timestamp}</span>
+          </div>
+        </div>
+        <h3 className="text-gray-300 font-medium text-lg leading-tight mb-2 line-through decoration-gray-500">
+          {call.emergency_type}
+        </h3>
+        <div className="mb-3">
+          <div className="text-gray-500 font-bold text-sm mb-1 line-through">{call.caller_number}</div>
+          <div className="flex items-center text-gray-600 text-xs space-x-1">
+            <span className="material-icons text-[14px]">location_on</span>
+            <span>{call.location}</span>
+          </div>
+        </div>
+        <div className="bg-black/40 rounded-lg p-3 mt-3">
+          <div className="text-xs text-gray-600 font-mono leading-relaxed truncate">
+            "{call.summary}"
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const isP0Human = isHumanAgent && call.priority === "P0";
+
+  return (
+    <div
+      className={`card-enter bg-card-dark rounded-lg p-4 border-l-4 ${colors.border} ${
+        isAiAgent ? "ai-pulse" : ""
+      } ${
+        isHumanAgent
+          ? `ring-1 ${
+              isP0Human
+                ? "ring-priority-p0/30 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
+                : "ring-priority-p1/20 shadow-lg"
+            }`
+          : ""
+      } relative overflow-hidden group hover:bg-[#32324a] transition-colors`}
+    >
+      <div className="flex justify-between items-center mb-2">
+        <span
+          className={`${
+            isP0Human ? `${colors.solid} text-white shadow-sm` : `${colors.bg} ${colors.text}`
+          } text-xs font-bold px-2 py-0.5 rounded uppercase tracking-wide`}
+        >
+          {call.priority}
+        </span>
+        <span className="text-xs text-gray-500 font-mono">{call.timestamp}</span>
+      </div>
+      <h3 className="text-white font-semibold text-lg leading-tight mb-2">
+        {call.emergency_type}
+      </h3>
+      <div className="mb-3">
+        <div className="text-white font-bold text-sm mb-1">{call.caller_number}</div>
+        <div className="flex items-center text-gray-400 text-xs space-x-1">
+          <span className="material-icons text-[14px] text-gray-500">location_on</span>
+          <span>{call.location}</span>
+        </div>
+      </div>
+      <div className="bg-black/40 rounded-lg p-3 mt-3">
+        <div className="text-xs text-gray-400 font-mono leading-relaxed truncate">
+          "{call.summary}"
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function KanbanColumn({ column, cards }) {
+  const isAiAgent = column.key === "ai_agent";
+  const isCompleted = column.key === "completed";
+  const isHumanAgent = column.key === "human_agent";
+
+  const content = (
+    <>
+      <div className={`flex items-center justify-between mb-4 ${column.wrapperClass ? "px-2 pt-2" : "px-1"}`}>
+        <div className="flex items-center space-x-2">
+          {column.icon ? (
+            <span className="material-icons text-gray-500 text-sm">{column.icon}</span>
+          ) : (
+            <span className={`w-2 h-2 rounded-full ${column.dotColor} ${column.dotPulse ? "animate-pulse" : ""}`} />
+          )}
+          <h2 className={`text-sm font-semibold uppercase tracking-wider ${column.headerTextColor}`}>
+            {column.label}
+          </h2>
+        </div>
+        {!isCompleted && (
+          <span className={`${column.badgeStyle} text-xs px-2 py-0.5 rounded-full font-mono`}>
+            {cards.length}
+          </span>
+        )}
+      </div>
+      <div className={`kanban-col flex-1 overflow-y-auto space-y-3 ${column.wrapperClass ? "px-1" : "pr-2"}`}>
+        {cards.map((call) => (
+          <CallCard
+            key={call.id}
+            call={call}
+            isAiAgent={isAiAgent}
+            isCompleted={isCompleted}
+            isHumanAgent={isHumanAgent}
+          />
+        ))}
+      </div>
+    </>
+  );
+
+  return (
+    <div
+      className={`flex flex-col h-full ${isCompleted ? "opacity-60 hover:opacity-100 transition-opacity duration-300" : ""} ${
+        column.wrapperClass || ""
+      }`}
+    >
+      {content}
+    </div>
+  );
+}
+
+function Header({ stats }) {
+  return (
+    <header className="h-16 flex-none bg-[#151b2b] border-b border-gray-800 px-6 flex items-center justify-between z-10 relative">
+      <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-center w-10 h-10 rounded bg-primary/20 text-primary">
+          <span className="material-icons">health_and_safety</span>
+        </div>
+        <h1 className="text-xl font-bold tracking-tight text-white">
+          RescueLine <span className="text-primary font-normal">AI</span>
+        </h1>
+      </div>
+      <div className="flex items-center space-x-3">
+      </div>
+    </header>
+  );
+}
+
+function StatPill({ label, value, color = "text-white" }) {
+  return (
+    <div className="flex items-center space-x-2 bg-gray-800/60 px-3 py-1.5 rounded-full">
+      <span className="text-xs text-gray-400">{label}</span>
+      <span className={`text-sm font-bold font-mono ${color}`}>{value}</span>
+    </div>
+  );
+}
+
+function DisconnectedBanner() {
+  return (
+    <div className="bg-priority-p0/90 text-white text-center text-sm py-2 px-4 font-medium">
+      Disconnected — reconnecting...
+    </div>
+  );
+}
+
+export default function App() {
+  const { callsByStatus, stats, connected } = useCallData();
+
+  return (
+    <div className="bg-background-dark text-gray-100 h-screen overflow-hidden flex flex-col">
+      {!connected && <DisconnectedBanner />}
+      <Header stats={stats} />
+      <main className="flex-1 overflow-x-auto overflow-y-hidden bg-surface-dark p-6">
+        <div className="h-full min-w-[1200px] grid grid-cols-4 gap-6">
+          {COLUMNS.map((col) => (
+            <KanbanColumn key={col.key} column={col} cards={callsByStatus[col.key]} />
+          ))}
+        </div>
+      </main>
+    </div>
+  );
+}
