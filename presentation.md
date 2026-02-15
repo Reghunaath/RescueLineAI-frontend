@@ -168,7 +168,4 @@ All non-critical cases managed by AI with safety guidance
 
 # Thank You
 
-**RescueLine AI**
-Intelligent Emergency Response for Disaster Scenarios
-
 ---
